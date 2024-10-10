@@ -1,0 +1,36 @@
+class User_Info {
+  String name;
+  int age;
+  String email;
+  String phone;
+  int userId;
+
+  User_Info({
+    required this.name,
+    required this.age,
+    required this.email,
+    required this.phone,
+    required this.userId,
+  });
+
+  // Optionally, you can add methods to convert to/from JSON
+  factory User_Info.fromJson(Map<String, dynamic> json) {
+    return User_Info(
+      name: json['name'],
+      age: json['age'],
+      email: json['email'],
+      phone: json['phone'],
+      userId: json['id'],
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'name': name,
+      'age': age,
+      'email': email,
+      'phone': phone,
+      'id': userId,
+    };
+  }
+}
