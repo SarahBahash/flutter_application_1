@@ -66,6 +66,19 @@ flutter:
     - assets/lounge1_image.png
     - assets/lounge2_image.png
     - assets/lounge3_image.png
+    - assets/lounge_logo.png
+    - assets/lounge1_image2.png
+    - assets/lounge1_image3.png
+    - assets/lounge1_image4.png
+    - assets/lounge1_image5.png
+    - assets/lounge2_image2.png
+    - assets/lounge2_image3.png
+    - assets/lounge2_image4.png
+    - assets/lounge2_image5.png
+    - assets/lounge3_image2.png
+    - assets/lounge3_image3.png
+    - assets/lounge3_image4.png
+    - assets/lounge3_image5.png
 
 
   # To add assets to your application, add an assets section, like this:

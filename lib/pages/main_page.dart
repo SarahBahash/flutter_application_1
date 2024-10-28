@@ -32,7 +32,7 @@ class MainPage extends StatelessWidget {
               children: [
                 Image.asset(
                   'assets/logo2.png',
-                  height: 200,
+                  height: 250,
                 ),
                 const SizedBox(height: 20),
                 const Text(
