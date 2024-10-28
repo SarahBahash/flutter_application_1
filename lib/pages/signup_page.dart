@@ -76,7 +76,7 @@ class SignUpPage extends StatelessWidget {
   Future<void> _signUp(BuildContext context, String name, int age, String email,
       String phone, String password) async {
     final response = await http.post(
-      Uri.parse('http://10.0.2.2:3000/api/signup'),
+      Uri.parse('http://10.0.2.2:4000/api/signup'),
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
       },

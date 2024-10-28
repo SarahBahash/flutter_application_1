@@ -63,6 +63,9 @@ flutter:
   assets:
     - assets/jetsetgo_logo.png
     - assets/logo2.png
+    - assets/lounge1_image.png
+    - assets/lounge2_image.png
+    - assets/lounge3_image.png
 
 
   # To add assets to your application, add an assets section, like this:

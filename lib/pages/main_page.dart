@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'driver_page.dart';
 import 'user_info_dialog.dart';
 import 'previous_reservations_dialog.dart';
+import 'lounge_selection_page.dart'; // Import the lounge selection page
 
 class MainPage extends StatelessWidget {
   const MainPage({super.key});
@@ -11,7 +12,7 @@ class MainPage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Main Page'),
-        backgroundColor: Colors.blue[800], // Dark blue for the AppBar
+        backgroundColor: Colors.blue[800],
         actions: [
           IconButton(
             icon: const Icon(Icons.info),
@@ -22,7 +23,7 @@ class MainPage extends StatelessWidget {
         ],
       ),
       body: Container(
-        color: Colors.white, // White background for the body
+        color: Colors.white,
         child: Center(
           child: Padding(
             padding: const EdgeInsets.all(16.0),
@@ -30,8 +31,8 @@ class MainPage extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Image.asset(
-                  'assets/logo2.png', // Add your logo image here
-                  height: 200, // Adjust height as needed
+                  'assets/logo2.png',
+                  height: 200,
                 ),
                 const SizedBox(height: 20),
                 const Text(
@@ -49,6 +50,18 @@ class MainPage extends StatelessWidget {
                     );
                   },
                   child: const Text('Book a Driver'),
+                ),
+                const SizedBox(height: 20),
+                ElevatedButton(
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) =>
+                              const LoungeSelectionPage()), // Navigate to lounge selection
+                    );
+                  },
+                  child: const Text('Book a Lounge'),
                 ),
                 const SizedBox(height: 20),
                 ElevatedButton(
@@ -77,7 +90,7 @@ class MainPage extends StatelessWidget {
               ListTile(
                 title: const Text('View User Info'),
                 onTap: () {
-                  Navigator.pop(context); // Close the dialog
+                  Navigator.pop(context);
                   showDialog(
                     context: context,
                     builder: (context) => const UserInfoDialog(),
@@ -87,7 +100,7 @@ class MainPage extends StatelessWidget {
               ListTile(
                 title: const Text('View Previous Reservations'),
                 onTap: () {
-                  Navigator.pop(context); // Close the dialog
+                  Navigator.pop(context);
                   showDialog(
                     context: context,
                     builder: (context) => const PreviousReservationsDialog(),
