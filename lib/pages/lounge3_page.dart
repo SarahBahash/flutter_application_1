@@ -26,7 +26,7 @@ class Lounge3Page extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Lounge 1'),
+        title: const Text('Lounge 3'),
         backgroundColor: Colors.blue[800],
       ),
       backgroundColor: Colors.white,

@@ -13,7 +13,8 @@ class LoungeSelectionPage extends StatelessWidget {
         title: const Text('King Airport Lounge'),
         backgroundColor: Colors.blue[800],
       ),
-      backgroundColor: Colors.white, // Set the background color to white
+      backgroundColor: const Color.fromARGB(
+          255, 255, 255, 255), // Set the background color to white
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
