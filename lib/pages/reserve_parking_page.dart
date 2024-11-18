@@ -103,24 +103,21 @@ class _ParkingReservationPageState extends State<ReserveParkingPage> {
       parkingError,
       durationError
     ].every((error) => error == null)) {
-      // Prepare reservation
-      final reservation = {
-        "user_name": _nameController.text,
-        "phone": _phoneController.text,
-        "email": _emailController.text,
-        "vehicle_number": _vehicleNumberController.text,
-        "reservation_date": DateFormat('yyyy-MM-dd').format(selectedDate!),
-        "start_time": selectedTime!.format(context),
-        "parking_slot": selectedParkingSpot,
-        "time_period": "${selectedDurationValue} ${selectedDurationUnit}"
-      };
-
       try {
         final url = Uri.parse('http://10.0.2.2:6000/api/reserve-parking');
         final response = await http.post(
           url,
           headers: {'Content-Type': 'application/json'},
-          body: jsonEncode(reservation),
+          body: jsonEncode({
+            "user_name": _nameController.text,
+            "phone": _phoneController.text,
+            "email": _emailController.text,
+            "vehicle_number": _vehicleNumberController.text,
+            "reservation_date": DateFormat('yyyy-MM-dd').format(selectedDate!),
+            "start_time": formatTimeOfDay(selectedTime!),
+            "parking_slot": selectedParkingSpot,
+            "time_period": "${selectedDurationValue} ${selectedDurationUnit}"
+          }),
         );
 
         if (response.statusCode == 201) {
@@ -146,8 +143,19 @@ class _ParkingReservationPageState extends State<ReserveParkingPage> {
       } catch (e) {
         ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(content: Text('An unexpected error occurred.')));
+        print(e);
       }
     }
+  }
+
+  // Function to format TimeOfDay to "HH:mm:ss"
+  String formatTimeOfDay(TimeOfDay time) {
+    String hours = time.hour.toString().padLeft(2, '0'); // Zero-padded hours
+    String minutes =
+        time.minute.toString().padLeft(2, '0'); // Zero-padded minutes
+    String seconds = "00"; // Default seconds to zero
+
+    return "$hours:$minutes:$seconds"; // Return formatted time string
   }
 
   Widget _buildDurationSelector() {

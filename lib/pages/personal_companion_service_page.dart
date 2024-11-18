@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:http/http.dart' as http; // Import http package
+import 'dart:convert'; // Import for json encoding
 
 class PersonalCompanionServicePage extends StatefulWidget {
   const PersonalCompanionServicePage({super.key});
@@ -28,6 +30,15 @@ class _PersonalCompanionServicePageState
   String? phoneError;
   String? dateError;
   String? timeError;
+
+  // List of staff names (not displayed)
+  final List<String> staffNames = [
+    'Khaled Mohammed',
+    'Sarah Bahashwan',
+    'Deema Alsini',
+    'Abdullah Ali',
+    'Abdulaziz Khaled',
+  ];
 
   @override
   void dispose() {
@@ -65,7 +76,7 @@ class _PersonalCompanionServicePageState
     }
   }
 
-  void _confirmReservation() {
+  Future<void> _confirmReservation() async {
     setState(() {
       nameError = _nameController.text.isEmpty ? 'Name cannot be empty' : null;
       emailError =
@@ -76,37 +87,64 @@ class _PersonalCompanionServicePageState
       timeError = selectedTime == null ? 'Please select an arrival time' : null;
     });
 
-    if (nameError == null &&
-        emailError == null &&
-        phoneError == null &&
-        dateError == null &&
-        timeError == null) {
-      final name = _nameController.text;
-      final email = _emailController.text;
-      final phone = _phoneController.text;
-      final type = isChildSelected ? 'Child' : 'Adult';
-
-      final date = DateFormat.yMMMd().format(selectedDate!);
-      final time = selectedTime!.format(context);
-
-      showDialog(
-        context: context,
-        builder: (context) {
-          return AlertDialog(
-            title: const Text('Reservation Confirmed'),
-            content: Text(
-              'Type: $type\nName: $name\nEmail: $email\nPhone: $phone\nArrival Date: $date\nArrival Time: $time',
+    if ([
+      nameError,
+      emailError,
+      phoneError,
+      dateError,
+      timeError,
+    ].every((error) => error == null)) {
+      try {
+        final url =
+            Uri.parse('http://10.0.2.2:6000/api/reserve-personal-companion');
+        final response = await http.post(
+          url,
+          headers: {'Content-Type': 'application/json'},
+          body: jsonEncode({
+            "name": _nameController.text,
+            "email": _emailController.text,
+            "phone": _phoneController.text,
+            "date": DateFormat('yyyy-MM-dd').format(selectedDate!),
+            "time": formatTimeOfDay(selectedTime!),
+            "staff": staffNames[0], // Example: using the first staff member
+          }),
+        );
+        if (response.statusCode == 201) {
+          final data = jsonDecode(response.body);
+          showDialog(
+            context: context,
+            builder: (context) => AlertDialog(
+              title: const Text('Reservation Confirmed'),
+              content: Text('Reservation ID: ${data['id']}'),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.pop(context),
+                  child: const Text('OK'),
+                ),
+              ],
             ),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.pop(context),
-                child: const Text('OK'),
-              ),
-            ],
           );
-        },
-      );
+        } else {
+          final error = jsonDecode(response.body)['error'] ?? 'Unknown error';
+          ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text('Failed to reserve: $error')));
+        }
+      } catch (e) {
+        ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('An unexpected error occurred.')));
+        print(e);
+      }
     }
+  }
+
+  // Function to format TimeOfDay to "HH:mm:ss"
+  String formatTimeOfDay(TimeOfDay time) {
+    String hours = time.hour.toString().padLeft(2, '0'); // Zero-padded hours
+    String minutes =
+        time.minute.toString().padLeft(2, '0'); // Zero-padded minutes
+    String seconds = "00"; // Default seconds to zero
+
+    return "$hours:$minutes:$seconds"; // Return formatted time string
   }
 
   @override
