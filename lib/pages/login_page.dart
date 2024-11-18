@@ -79,7 +79,7 @@ class LoginPage extends StatelessWidget {
   }
 
   Future<bool> _login(String email, String password) async {
-    final url = Uri.parse('http://10.0.2.2:4000/api/login');
+    final url = Uri.parse('http://10.0.2.2:6000/api/login');
 
     // Log the email and password being sent
     print('Attempting login with email: $email');

@@ -51,7 +51,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Future<void> fetchData() async {
     final response =
-        await http.get(Uri.parse('http://localhost:3000/api/data'));
+        await http.get(Uri.parse('http://localhost:6000/api/data'));
 
     if (response.statusCode == 200) {
       var data = json.decode(response.body);

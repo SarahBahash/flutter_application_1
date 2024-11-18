@@ -12,57 +12,137 @@ class LoungeSelectionPage extends StatelessWidget {
       appBar: AppBar(
         title: const Text('King Airport Lounge'),
         backgroundColor: Colors.blue[800],
+        elevation: 0, // Flat app bar for modern look
       ),
-      backgroundColor: const Color.fromARGB(
-          255, 255, 255, 255), // Set the background color to white
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Image.asset('assets/lounge_logo.png',
-                height: 250), // Ensure this image exists
-            const SizedBox(height: 20),
-            const Text(
-              'Choose a Lounge',
-              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: () {
-                Navigator.push(
+      body: Container(
+        color: Colors.white,
+        child: Center(
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                // Logo Section
+                Image.asset(
+                  'assets/lounge_logo.png',
+                  height: 180,
+                  fit: BoxFit.contain,
+                ),
+                const SizedBox(height: 20),
+
+                // Title and Subtitle
+                const Text(
+                  'Welcome to King Airport Lounge',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontSize: 24,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black87,
+                  ),
+                ),
+                const SizedBox(height: 10),
+                const Text(
+                  'Select a lounge to access premium services.',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(fontSize: 16, color: Colors.grey),
+                ),
+                const SizedBox(height: 30),
+
+                // Lounge Buttons
+                _buildLoungeCard(
                   context,
-                  MaterialPageRoute(
-                      builder: (context) =>
-                          const Lounge1Page()), // Ensure Lounge1Page exists
-                );
-              },
-              child: const Text('AL Fursan'),
-            ),
-            const SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: () {
-                Navigator.push(
+                  title: 'AL Fursan Lounge',
+                  description: 'Premium comfort and services.',
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => const Lounge1Page()),
+                    );
+                  },
+                ),
+                const SizedBox(height: 15),
+                _buildLoungeCard(
                   context,
-                  MaterialPageRoute(
-                      builder: (context) =>
-                          const Lounge2Page()), // Ensure Lounge2Page exists
-                );
-              },
-              child: const Text('PLAZA premium'),
-            ),
-            const SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: () {
-                Navigator.push(
+                  title: 'PLAZA Premium Lounge',
+                  description: 'Relax and rejuvenate in style.',
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => const Lounge2Page()),
+                    );
+                  },
+                ),
+                const SizedBox(height: 15),
+                _buildLoungeCard(
                   context,
-                  MaterialPageRoute(
-                      builder: (context) =>
-                          const Lounge3Page()), // Ensure Lounge3Page exists
-                );
-              },
-              child: const Text('Wellcome'),
+                  title: 'Welcome Lounge',
+                  description: 'Exceptional hospitality awaits.',
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => const Lounge3Page()),
+                    );
+                  },
+                ),
+              ],
             ),
-          ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  // Lounge Card Builder
+  Widget _buildLoungeCard(
+    BuildContext context, {
+    required String title,
+    required String description,
+    required VoidCallback onTap,
+  }) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Card(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(12),
+        ),
+        elevation: 4,
+        shadowColor: Colors.blue[100],
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Row(
+            children: [
+              Icon(Icons.local_airport, color: Colors.blue[800], size: 40),
+              const SizedBox(width: 15),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      title,
+                      style: const TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black87,
+                      ),
+                    ),
+                    const SizedBox(height: 5),
+                    Text(
+                      description,
+                      style: const TextStyle(
+                        fontSize: 14,
+                        color: Colors.black54,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const Icon(Icons.arrow_forward_ios, color: Colors.grey, size: 20),
+            ],
+          ),
         ),
       ),
     );
