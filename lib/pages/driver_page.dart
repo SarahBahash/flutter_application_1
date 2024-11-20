@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http; // Import http package
+import 'dart:convert'; // Import for json encoding
+import 'dart:math'; // Import this at the top of the file
 
 class DriverPage extends StatefulWidget {
   const DriverPage({super.key});
@@ -19,32 +22,85 @@ class _DriverPageState extends State<DriverPage> {
   final List<String> _terminals = ['Terminal 1', 'Terminal 2'];
   final _formKey = GlobalKey<FormState>();
 
-  void _reserve() {
+  // List of staff names (not displayed)
+  final List<String> driverNames = [
+    'Khaled Mohammed',
+    'Sarah Bahashwan',
+    'Deema Alsini',
+    'Abdullah Ali',
+    'Abdulaziz Khaled',
+  ];
+
+  void _reserve() async {
     if (!_formKey.currentState!.validate()) {
       return; // Exit early if the form is invalid
     }
+    final random = Random();
+    final randomdriver = driverNames[random.nextInt(driverNames.length)];
 
-    // Show reservation details
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Reservation Details'),
-        content: Text(
-          'City: ${_cityController.text}\n'
-          'Street: ${_streetController.text}\n'
-          'Postcode: ${_postcodeController.text}\n'
-          'Email: ${_emailController.text}\n'
-          'Terminal: $_selectedTerminal\n'
-          'Pickup Time: ${_pickupTime?.format(context)}',
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(),
-            child: const Text('OK'),
+    // Send the reservation data to the server
+    try {
+      final url = Uri.parse('http://10.0.2.2:6000/api/reserve-driver');
+      final response = await http.post(
+        url,
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode({
+          'city': _cityController.text,
+          'street': _streetController.text,
+          'postcode': _postcodeController.text,
+          'email': _emailController.text,
+          'terminal': _selectedTerminal,
+          'pickup_time': formatTimeOfDay(_pickupTime!),
+          "driver": randomdriver, // Example: using the first staff member
+        }),
+      );
+
+      if (response.statusCode == 201) {
+        // If the server returns a 201 Created response, show success dialog
+        showDialog(
+          context: context,
+          builder: (context) => AlertDialog(
+            title: const Text('Success'),
+            content: const Text('Reservation successful!'),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(),
+                child: const Text('OK'),
+              ),
+            ],
           ),
-        ],
-      ),
-    );
+        );
+      } else {
+        // Handle server errors
+        throw Exception('Failed to make reservation');
+      }
+    } catch (e) {
+      // Show error dialog if something goes wrong
+      print(e);
+      showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: const Text('Error'),
+          content: const Text('Failed to make reservation. Please try again.'),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: const Text('OK'),
+            ),
+          ],
+        ),
+      );
+    }
+  }
+
+  // Function to format TimeOfDay to "HH:mm:ss"
+  String formatTimeOfDay(TimeOfDay time) {
+    String hours = time.hour.toString().padLeft(2, '0'); // Zero-padded hours
+    String minutes =
+        time.minute.toString().padLeft(2, '0'); // Zero-padded minutes
+    String seconds = "00"; // Default seconds to zero
+
+    return "$hours:$minutes:$seconds"; // Return formatted time string
   }
 
   @override
@@ -210,7 +266,7 @@ class _DriverPageState extends State<DriverPage> {
                         onPressed: _reserve,
                         child: const Text(
                           'Reserve',
-                          style: TextStyle(fontSize: 18),
+                          style: TextStyle(fontSize: 18, color: Colors.white),
                         ),
                       ),
                     ],

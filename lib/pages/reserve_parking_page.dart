@@ -17,6 +17,9 @@ class _ParkingReservationPageState extends State<ReserveParkingPage> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _vehicleNumberController =
       TextEditingController();
+  // Controllers for date and time
+  final TextEditingController _dateController = TextEditingController();
+  final TextEditingController _timeController = TextEditingController();
 
   DateTime? selectedDate;
   TimeOfDay? selectedTime;
@@ -56,6 +59,8 @@ class _ParkingReservationPageState extends State<ReserveParkingPage> {
     if (pickedDate != null) {
       setState(() {
         selectedDate = pickedDate;
+        _dateController.text =
+            DateFormat.yMMMd().format(pickedDate); // Update controller
         dateError = null;
       });
     }
@@ -69,6 +74,7 @@ class _ParkingReservationPageState extends State<ReserveParkingPage> {
     if (pickedTime != null) {
       setState(() {
         selectedTime = pickedTime;
+        _timeController.text = pickedTime.format(context); // Update controller
         timeError = null;
       });
     }
@@ -116,7 +122,7 @@ class _ParkingReservationPageState extends State<ReserveParkingPage> {
             "reservation_date": DateFormat('yyyy-MM-dd').format(selectedDate!),
             "start_time": formatTimeOfDay(selectedTime!),
             "parking_slot": selectedParkingSpot,
-            "time_period": "${selectedDurationValue} ${selectedDurationUnit}"
+            "time_period": "$selectedDurationValue $selectedDurationUnit"
           }),
         );
 
@@ -311,13 +317,13 @@ class _ParkingReservationPageState extends State<ReserveParkingPage> {
                     onTap: () => _selectDate(context),
                     child: AbsorbPointer(
                       child: TextField(
+                        controller: _dateController, // Use the controller
                         decoration: InputDecoration(
                           labelText: 'Arrival Date',
-                          border: const OutlineInputBorder(),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(8),
+                          ),
                           suffixIcon: const Icon(Icons.calendar_today),
-                          hintText: selectedDate != null
-                              ? DateFormat.yMMMd().format(selectedDate!)
-                              : 'Select a date',
                           errorText: dateError,
                           filled: true,
                           fillColor: Colors.white,
@@ -325,18 +331,19 @@ class _ParkingReservationPageState extends State<ReserveParkingPage> {
                       ),
                     ),
                   ),
+
                   const SizedBox(height: 20),
                   GestureDetector(
                     onTap: () => _selectTime(context),
                     child: AbsorbPointer(
                       child: TextField(
+                        controller: _timeController, // Use the controller
                         decoration: InputDecoration(
                           labelText: 'Arrival Time',
-                          border: const OutlineInputBorder(),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(8),
+                          ),
                           suffixIcon: const Icon(Icons.access_time),
-                          hintText: selectedTime != null
-                              ? selectedTime!.format(context)
-                              : 'Select a time',
                           errorText: timeError,
                           filled: true,
                           fillColor: Colors.white,
@@ -344,6 +351,7 @@ class _ParkingReservationPageState extends State<ReserveParkingPage> {
                       ),
                     ),
                   ),
+
                   const SizedBox(height: 20),
                   _buildDurationSelector(),
                   const SizedBox(height: 20),

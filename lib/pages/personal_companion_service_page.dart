@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:http/http.dart' as http; // Import http package
 import 'dart:convert'; // Import for json encoding
+import 'dart:math'; // Import this at the top of the file
 
 class PersonalCompanionServicePage extends StatefulWidget {
   const PersonalCompanionServicePage({super.key});
@@ -19,6 +20,9 @@ class _PersonalCompanionServicePageState
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _phoneController = TextEditingController();
+  // Controllers for date and time
+  final TextEditingController _dateController = TextEditingController();
+  final TextEditingController _timeController = TextEditingController();
 
   // Variables to store selected date and time
   DateTime? selectedDate;
@@ -58,6 +62,8 @@ class _PersonalCompanionServicePageState
     if (pickedDate != null) {
       setState(() {
         selectedDate = pickedDate;
+        _dateController.text =
+            DateFormat.yMMMd().format(pickedDate); // Update controller
         dateError = null;
       });
     }
@@ -71,6 +77,7 @@ class _PersonalCompanionServicePageState
     if (pickedTime != null) {
       setState(() {
         selectedTime = pickedTime;
+        _timeController.text = pickedTime.format(context); // Update controller
         timeError = null;
       });
     }
@@ -86,6 +93,8 @@ class _PersonalCompanionServicePageState
       dateError = selectedDate == null ? 'Please select an arrival date' : null;
       timeError = selectedTime == null ? 'Please select an arrival time' : null;
     });
+    final random = Random();
+    final randomStaff = staffNames[random.nextInt(staffNames.length)];
 
     if ([
       nameError,
@@ -106,7 +115,7 @@ class _PersonalCompanionServicePageState
             "phone": _phoneController.text,
             "date": DateFormat('yyyy-MM-dd').format(selectedDate!),
             "time": formatTimeOfDay(selectedTime!),
-            "staff": staffNames[0], // Example: using the first staff member
+            "staff": randomStaff, // Example: using the first staff member
           }),
         );
         if (response.statusCode == 201) {
@@ -237,15 +246,13 @@ class _PersonalCompanionServicePageState
                   onTap: () => _selectDate(context),
                   child: AbsorbPointer(
                     child: TextField(
+                      controller: _dateController, // Use the controller
                       decoration: InputDecoration(
                         labelText: 'Arrival Date',
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(8),
                         ),
                         suffixIcon: const Icon(Icons.calendar_today),
-                        hintText: selectedDate != null
-                            ? DateFormat.yMMMd().format(selectedDate!)
-                            : 'Select a date',
                         errorText: dateError,
                         filled: true,
                         fillColor: Colors.white,
@@ -258,15 +265,13 @@ class _PersonalCompanionServicePageState
                   onTap: () => _selectTime(context),
                   child: AbsorbPointer(
                     child: TextField(
+                      controller: _timeController, // Use the controller
                       decoration: InputDecoration(
                         labelText: 'Arrival Time',
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(8),
                         ),
                         suffixIcon: const Icon(Icons.access_time),
-                        hintText: selectedTime != null
-                            ? selectedTime!.format(context)
-                            : 'Select a time',
                         errorText: timeError,
                         filled: true,
                         fillColor: Colors.white,
