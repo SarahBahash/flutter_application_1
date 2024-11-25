@@ -15,58 +15,147 @@ class SignUpPage extends StatelessWidget {
     final TextEditingController passwordController = TextEditingController();
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Sign Up'),
-        backgroundColor: Colors.blue[800],
-      ),
       body: Container(
-        color: Colors.white,
-        padding: const EdgeInsets.all(16.0),
-        child: Center(
-          child: SingleChildScrollView(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                const Text(
-                  'Sign Up',
-                  style: TextStyle(fontSize: 32, fontWeight: FontWeight.bold),
-                  textAlign: TextAlign.center,
-                ),
-                const SizedBox(height: 40),
-                _buildTextField(nameController, 'Name', false),
-                const SizedBox(height: 20),
-                _buildTextField(ageController, 'Age', false,
-                    keyboardType: TextInputType.number),
-                const SizedBox(height: 20),
-                _buildTextField(emailController, 'Email', false),
-                const SizedBox(height: 20),
-                _buildTextField(phoneController, 'Phone Number', false,
-                    keyboardType: TextInputType.phone),
-                const SizedBox(height: 20),
-                _buildTextField(passwordController, 'Password', true),
-                const SizedBox(height: 20),
-                ElevatedButton(
-                  onPressed: () async {
-                    await _signUp(
-                      context,
-                      nameController.text,
-                      int.tryParse(ageController.text) ?? 0,
-                      emailController.text,
-                      phoneController.text,
-                      passwordController.text,
-                    );
+        width: double.infinity,
+        height: double.infinity,
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            colors: [
+              Colors.blue.shade900,
+              Colors.blue.shade500,
+            ],
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+          ),
+        ),
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 40.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              // Back Button
+              Align(
+                alignment: Alignment.topLeft,
+                child: IconButton(
+                  icon: const Icon(Icons.arrow_back, color: Colors.white),
+                  onPressed: () {
+                    Navigator.pop(context);
                   },
-                  style: ElevatedButton.styleFrom(
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 32, vertical: 16),
-                    foregroundColor: Colors.white,
-                    backgroundColor: Colors.blue[800],
-                    textStyle: const TextStyle(fontSize: 18),
-                  ),
-                  child: const Text('Sign Up'),
                 ),
-              ],
-            ),
+              ),
+              const SizedBox(height: 20),
+
+              // Page Title
+              const Text(
+                'Create Your Account',
+                style: TextStyle(
+                  fontSize: 28,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white,
+                ),
+              ),
+              const SizedBox(height: 10),
+              const Text(
+                'Sign up to start your journey!',
+                style: TextStyle(
+                  fontSize: 16,
+                  color: Colors.white70,
+                ),
+              ),
+              const SizedBox(height: 40),
+
+              // Sign-Up Form
+              Container(
+                padding: const EdgeInsets.all(20.0),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(16.0),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.1),
+                      blurRadius: 10,
+                      offset: const Offset(0, 5),
+                    ),
+                  ],
+                ),
+                child: Column(
+                  children: [
+                    _buildTextField(
+                        nameController, 'Full Name', false, Icons.person),
+                    const SizedBox(height: 20),
+                    _buildTextField(
+                        ageController, 'Age', false, Icons.calendar_today,
+                        keyboardType: TextInputType.number),
+                    const SizedBox(height: 20),
+                    _buildTextField(
+                        emailController, 'Email Address', false, Icons.email),
+                    const SizedBox(height: 20),
+                    _buildTextField(
+                        phoneController, 'Phone Number', false, Icons.phone,
+                        keyboardType: TextInputType.phone),
+                    const SizedBox(height: 20),
+                    _buildTextField(
+                        passwordController, 'Password', true, Icons.lock),
+                    const SizedBox(height: 30),
+                    ElevatedButton(
+                      onPressed: () async {
+                        await _signUp(
+                          context,
+                          nameController.text,
+                          int.tryParse(ageController.text) ?? 0,
+                          emailController.text,
+                          phoneController.text,
+                          passwordController.text,
+                        );
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.blue[800],
+                        foregroundColor: Colors.white,
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 40, vertical: 16),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(30),
+                        ),
+                        textStyle: const TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      child: const Text('Sign Up'),
+                    ),
+                  ],
+                ),
+              ),
+
+              const SizedBox(height: 20),
+
+              // Already Have an Account?
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Text(
+                    'Already have an account?',
+                    style: TextStyle(
+                      color: Colors.white70,
+                      fontSize: 14,
+                    ),
+                  ),
+                  TextButton(
+                    onPressed: () {
+                      Navigator.pushNamed(context, '/login');
+                    },
+                    child: const Text(
+                      'Login',
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                        fontSize: 14,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ],
           ),
         ),
       ),
@@ -97,7 +186,6 @@ class SignUpPage extends StatelessWidget {
     } else if (response.statusCode == 409) {
       _showDialog(context, 'User already exists with this email.');
     } else {
-      print('Failed to sign up: ${response.body}');
       _showDialog(context, 'Failed to sign up. Please try again.');
     }
   }
@@ -107,20 +195,24 @@ class SignUpPage extends StatelessWidget {
     await prefs.setInt('userId', userId);
   }
 
-  Widget _buildTextField(
-      TextEditingController controller, String label, bool isPassword,
+  Widget _buildTextField(TextEditingController controller, String label,
+      bool isPassword, IconData icon,
       {TextInputType keyboardType = TextInputType.text}) {
     return TextField(
       controller: controller,
       decoration: InputDecoration(
+        prefixIcon: Icon(icon, color: Colors.blue[800]),
         labelText: label,
+        labelStyle: const TextStyle(color: Colors.blue),
+        filled: true,
+        fillColor: Colors.blue.withOpacity(0.1),
         border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(8.0),
-          borderSide: const BorderSide(color: Colors.blue),
+          borderRadius: BorderRadius.circular(30.0),
+          borderSide: BorderSide.none,
         ),
         focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(8.0),
-          borderSide: const BorderSide(color: Colors.blue, width: 2.0),
+          borderRadius: BorderRadius.circular(30.0),
+          borderSide: BorderSide(color: Colors.blue.shade800, width: 2.0),
         ),
       ),
       obscureText: isPassword,
@@ -166,13 +258,11 @@ class User_Info {
 
   factory User_Info.fromJson(Map<String, dynamic> json) {
     return User_Info(
-      name: json['name'] != null ? json['name'] as String : 'Unknown',
-      age: json['age'] != null ? json['age'] as int : 0, // Handle null safely
-      email: json['email'] != null
-          ? json['email'] as String
-          : 'unknown@example.com',
-      phone: json['phone'] != null ? json['phone'] as String : 'N/A',
-      userId: json['id'] != null ? json['id'] as int : -1,
+      name: json['name'] ?? 'Unknown',
+      age: json['age'] ?? 0,
+      email: json['email'] ?? 'unknown@example.com',
+      phone: json['phone'] ?? 'N/A',
+      userId: json['id'] ?? -1,
     );
   }
 }

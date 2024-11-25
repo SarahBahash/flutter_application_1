@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:shimmer/shimmer.dart'; // Add this package to your pubspec.yaml
+
 import 'driver_page.dart';
 import 'user_info_dialog.dart';
 import 'previous_reservations_dialog.dart';
@@ -12,12 +14,13 @@ class MainPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      extendBodyBehindAppBar: true, // Makes the app bar overlay the background
+      extendBodyBehindAppBar: true,
       appBar: AppBar(
         title: const Text(
           'Welcome to King Services',
           style: TextStyle(fontWeight: FontWeight.bold),
         ),
+        centerTitle: true,
         backgroundColor: Colors.transparent,
         elevation: 0,
         actions: [
@@ -32,36 +35,20 @@ class MainPage extends StatelessWidget {
       body: Container(
         decoration: const BoxDecoration(
           gradient: LinearGradient(
-            colors: [Color(0xFF0D47A1), Color(0xFF42A5F5)],
+            colors: [Color(0xFFBBDEFB), Color.fromARGB(255, 119, 191, 250)],
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
           ),
         ),
         child: Center(
           child: Padding(
-            padding: const EdgeInsets.all(16.0),
+            padding:
+                const EdgeInsets.symmetric(horizontal: 20.0, vertical: 30.0),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                // Logo with neon effect
-                Container(
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(100),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.blueAccent.withOpacity(0.5),
-                        blurRadius: 30,
-                        spreadRadius: 2,
-                      ),
-                    ],
-                  ),
-                  child: Image.asset(
-                    'assets/logo2.png',
-                    height: 200,
-                  ),
-                ),
-                const SizedBox(height: 30),
+                const SizedBox(height: 50),
                 const Text(
                   'Choose a Service',
                   style: TextStyle(
@@ -69,8 +56,9 @@ class MainPage extends StatelessWidget {
                     fontWeight: FontWeight.bold,
                     color: Colors.white,
                   ),
+                  textAlign: TextAlign.center,
                 ),
-                const SizedBox(height: 20),
+                const SizedBox(height: 40),
 
                 // Service Cards
                 _buildServiceCard(
@@ -78,11 +66,13 @@ class MainPage extends StatelessWidget {
                   title: 'Book a Driver',
                   description: 'Hire a professional driver at your service.',
                   icon: Icons.directions_car,
+                  shimmerColor: Colors.greenAccent,
                   onTap: () {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                          builder: (context) => const DriverPage()),
+                        builder: (context) => const DriverPage(),
+                      ),
                     );
                   },
                 ),
@@ -92,11 +82,13 @@ class MainPage extends StatelessWidget {
                   title: 'Book a Lounge',
                   description: 'Relax in luxury at our airport lounges.',
                   icon: Icons.airline_seat_recline_extra,
+                  shimmerColor: Colors.purpleAccent,
                   onTap: () {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                          builder: (context) => const LoungeSelectionPage()),
+                        builder: (context) => const LoungeSelectionPage(),
+                      ),
                     );
                   },
                 ),
@@ -106,12 +98,14 @@ class MainPage extends StatelessWidget {
                   title: 'Personal Companion Service',
                   description: 'A personal assistant for your journey.',
                   icon: Icons.person,
+                  shimmerColor: Colors.orangeAccent,
                   onTap: () {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                          builder: (context) =>
-                              const PersonalCompanionServicePage()),
+                        builder: (context) =>
+                            const PersonalCompanionServicePage(),
+                      ),
                     );
                   },
                 ),
@@ -121,11 +115,13 @@ class MainPage extends StatelessWidget {
                   title: 'Reserve Parking',
                   description: 'Secure your parking spot in advance.',
                   icon: Icons.local_parking,
+                  shimmerColor: Colors.redAccent,
                   onTap: () {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                          builder: (context) => const ReserveParkingPage()),
+                        builder: (context) => const ReserveParkingPage(),
+                      ),
                     );
                   },
                 ),
@@ -143,21 +139,39 @@ class MainPage extends StatelessWidget {
     required String title,
     required String description,
     required IconData icon,
+    required Color shimmerColor,
     required VoidCallback onTap,
   }) {
     return GestureDetector(
       onTap: onTap,
       child: Card(
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(15),
+          borderRadius: BorderRadius.circular(20),
         ),
-        elevation: 5,
-        shadowColor: Colors.blueAccent,
-        child: Padding(
+        elevation: 8,
+        shadowColor: shimmerColor.withOpacity(0.3),
+        child: Container(
           padding: const EdgeInsets.all(16.0),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(20),
+            gradient: const LinearGradient(
+              colors: [Colors.white, Colors.white70],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+            ),
+          ),
           child: Row(
             children: [
-              Icon(icon, color: Colors.blue[800], size: 40),
+              // Shimmer effect on the icon
+              Shimmer.fromColors(
+                baseColor: shimmerColor,
+                highlightColor: Colors.white,
+                child: CircleAvatar(
+                  backgroundColor: shimmerColor.withOpacity(0.5),
+                  radius: 30,
+                  child: Icon(icon, color: Colors.white, size: 30),
+                ),
+              ),
               const SizedBox(width: 15),
               Expanded(
                 child: Column(
@@ -174,8 +188,10 @@ class MainPage extends StatelessWidget {
                     const SizedBox(height: 5),
                     Text(
                       description,
-                      style:
-                          const TextStyle(fontSize: 14, color: Colors.black54),
+                      style: const TextStyle(
+                        fontSize: 14,
+                        color: Colors.black54,
+                      ),
                     ),
                   ],
                 ),
@@ -194,7 +210,10 @@ class MainPage extends StatelessWidget {
       context: context,
       builder: (context) {
         return AlertDialog(
-          title: const Text('More Options'),
+          title: const Text(
+            'More Options',
+            style: TextStyle(fontWeight: FontWeight.bold),
+          ),
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: [

@@ -11,7 +11,7 @@ class LoungeSelectionPage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: const Text('King Airport Lounge'),
-        backgroundColor: Colors.blue[800],
+        backgroundColor: const Color.fromARGB(255, 73, 138, 212),
         elevation: 0, // Flat app bar for modern look
       ),
       body: Container(
@@ -33,7 +33,7 @@ class LoungeSelectionPage extends StatelessWidget {
 
                 // Title and Subtitle
                 const Text(
-                  'Welcome to King Airport Lounge',
+                  'King Abdulaziz Airport Lounges',
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     fontSize: 24,

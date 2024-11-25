@@ -33,7 +33,10 @@ class Lounge1Page extends StatelessWidget {
       body: Container(
         decoration: const BoxDecoration(
           gradient: LinearGradient(
-            colors: [Colors.blue, Colors.white],
+            colors: [
+              Color.fromARGB(255, 106, 184, 247),
+              Color.fromARGB(255, 255, 255, 255)
+            ],
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
           ),

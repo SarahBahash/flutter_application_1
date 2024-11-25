@@ -6,67 +6,115 @@ class WelcomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Welcome to JetSetGo'),
-        backgroundColor: Colors.blue[800], // AppBar color
-      ),
       body: Container(
-        color: Colors.white, // White background for the body
-        child: Center(
-          child: Padding(
-            padding: const EdgeInsets.all(20.0),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment:
-                  CrossAxisAlignment.center, // Center align items
-              children: [
-                Image.asset(
-                  'assets/logo2.png',
-                  height: 450, // Adjust height as needed
-                ),
-                const SizedBox(height: 30), // Increased spacing
-                const Text(
-                  'if you do not have an Account please sign up',
-                  style: TextStyle(
-                    fontSize: 15,
-                    fontWeight: FontWeight.bold, // Bold text
-                    color: Colors.black87, // Text color
-                  ),
-                  textAlign: TextAlign.center,
-                ),
-                const SizedBox(height: 30), // Increased spacing
-                ElevatedButton(
-                  onPressed: () {
-                    Navigator.pushNamed(context, '/login');
-                  },
-                  style: ElevatedButton.styleFrom(
-                    foregroundColor: Colors.white,
-                    backgroundColor:
-                        Colors.blue[800], // Text color in the button
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 30, vertical: 15), // Padding
-                    textStyle: const TextStyle(fontSize: 18), // Font size
-                  ),
-                  child: const Text('Login'),
-                ),
-                const SizedBox(height: 20),
-                ElevatedButton(
-                  onPressed: () {
-                    Navigator.pushNamed(context, '/signup');
-                  },
-                  style: ElevatedButton.styleFrom(
-                    foregroundColor: Colors.white,
-                    backgroundColor:
-                        Colors.blue[800], // Text color in the button
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 30, vertical: 15), // Padding
-                    textStyle: const TextStyle(fontSize: 18), // Font size
-                  ),
-                  child: const Text('Sign Up'),
-                ),
-              ],
-            ),
+        width: double.infinity, // Full width
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            colors: [
+              Colors.blue.shade800,
+              Colors.blue.shade300,
+            ],
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
           ),
+        ),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            // Logo at the top
+            ClipOval(
+              child: Image.asset(
+                'assets/logo2.png',
+                height: 200,
+                width:
+                    200, // Ensure width is the same as height for a perfect circle
+                fit: BoxFit.cover, // Use BoxFit.cover to fill the circle
+              ),
+            ),
+            const SizedBox(height: 40), // Spacing below the logo
+
+            // Welcome Text
+            const Text(
+              'Welcome to JetSetGo!',
+              style: TextStyle(
+                fontSize: 24,
+                fontWeight: FontWeight.bold,
+                color: Colors.white,
+              ),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 10), // Small spacing
+            const Text(
+              'Your one-stop travel companion.',
+              style: TextStyle(
+                fontSize: 16,
+                color: Colors.white70,
+              ),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 40), // Spacing for buttons
+
+            // Login Button
+            ElevatedButton(
+              onPressed: () {
+                Navigator.pushNamed(context, '/login');
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.white,
+                padding: const EdgeInsets.symmetric(
+                    horizontal: 60, vertical: 15), // Button size
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(25),
+                ),
+                elevation: 5,
+              ),
+              child: const Text(
+                'Login',
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.blue,
+                ),
+              ),
+            ),
+            const SizedBox(height: 20), // Space between buttons
+
+            // Sign Up Button
+            ElevatedButton(
+              onPressed: () {
+                Navigator.pushNamed(context, '/signup');
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.blue[600],
+                padding: const EdgeInsets.symmetric(
+                    horizontal: 60, vertical: 15), // Button size
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(25),
+                ),
+                elevation: 5,
+              ),
+              child: const Text(
+                'Sign Up',
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white,
+                ),
+              ),
+            ),
+            const SizedBox(height: 30), // Additional spacing
+
+            // Note for users
+            const Text(
+              'Don’t have an account yet? Sign up to get started!',
+              style: TextStyle(
+                fontSize: 14,
+                color: Colors.white70,
+              ),
+              textAlign: TextAlign.center,
+            ),
+          ],
         ),
       ),
     );

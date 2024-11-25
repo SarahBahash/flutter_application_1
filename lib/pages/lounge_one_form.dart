@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
 class LoungeOneForm extends StatefulWidget {
   const LoungeOneForm({super.key});
@@ -22,175 +24,150 @@ class _LoungeOneFormState extends State<LoungeOneForm> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Book Your Lounge'),
-        backgroundColor: Colors.blue[800],
+        title: const Text('Lounge Booking'),
+        backgroundColor: const Color(0xFF2F63C5),
+        elevation: 2,
         centerTitle: true,
       ),
-      body: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.all(20.0),
-          child: Form(
-            key: _formKey,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const Text(
-                  "Fill in your details",
+      body: Container(
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            colors: [Color(0xFF6CBDFC), Color(0xFFF4F6F8)],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+          ),
+        ),
+        padding: const EdgeInsets.all(16.0),
+        child: SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              const Text(
+                'Book Your Lounge',
+                style: TextStyle(
+                  fontSize: 28,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black87,
+                ),
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 10),
+              const Text(
+                'Secure your lounge reservation with the form below.',
+                style: TextStyle(
+                  fontSize: 16,
+                  color: Colors.black54,
+                ),
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 20),
+              Card(
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(15),
+                ),
+                elevation: 4,
+                child: Padding(
+                  padding: const EdgeInsets.all(20.0),
+                  child: Form(
+                    key: _formKey,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        _buildTextField(
+                          label: "Full Name",
+                          icon: Icons.person_outline,
+                          onSave: (value) => _fullName = value,
+                          validator: (value) => value == null || value.isEmpty
+                              ? "Name is required"
+                              : null,
+                        ),
+                        const SizedBox(height: 16),
+                        _buildTextField(
+                          label: "Email",
+                          icon: Icons.email_outlined,
+                          keyboardType: TextInputType.emailAddress,
+                          onSave: (value) => _email = value,
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return "Email is required";
+                            } else if (!RegExp(r'^[^@]+@[^@]+\.[^@]+$')
+                                .hasMatch(value)) {
+                              return "Invalid email address";
+                            }
+                            return null;
+                          },
+                        ),
+                        const SizedBox(height: 16),
+                        _buildTextField(
+                          label: "Phone Number",
+                          icon: Icons.phone_outlined,
+                          keyboardType: TextInputType.phone,
+                          onSave: (value) => _phoneNumber = value,
+                          validator: (value) => value == null || value.isEmpty
+                              ? "Phone number is required"
+                              : null,
+                        ),
+                        const SizedBox(height: 16),
+                        _buildDatePickerField(
+                          label: "Departure Date",
+                          icon: Icons.calendar_today_outlined,
+                          onDatePicked: (pickedDate) {
+                            setState(() {
+                              _departureDateTime = pickedDate;
+                            });
+                          },
+                        ),
+                        const SizedBox(height: 16),
+                        DropdownButtonFormField<String>(
+                          decoration: InputDecoration(
+                            labelText: "Select Lounge",
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                            prefixIcon: const Icon(
+                              Icons.airline_seat_recline_extra_outlined,
+                              color: Colors.black87,
+                            ),
+                          ),
+                          items: lounges.map((lounge) {
+                            return DropdownMenuItem(
+                              value: lounge,
+                              child: Text(lounge),
+                            );
+                          }).toList(),
+                          onChanged: (value) =>
+                              setState(() => _selectedLounge = value),
+                          validator: (value) =>
+                              value == null ? "Please select a lounge" : null,
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 200),
+              ElevatedButton(
+                onPressed: _submitForm,
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color(0xFF2458B8),
+                  padding:
+                      const EdgeInsets.symmetric(vertical: 15, horizontal: 50),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  shadowColor: const Color.fromARGB(255, 255, 255, 255),
+                  elevation: 4,
+                ),
+                child: const Text(
+                  'Book Now',
                   style: TextStyle(
-                    fontSize: 20,
+                    fontSize: 16,
+                    color: Colors.white,
                     fontWeight: FontWeight.bold,
-                    color: Colors.blue,
                   ),
                 ),
-                const SizedBox(height: 20),
-
-                // Full Name Field
-                _buildTextField(
-                  label: "Full Name",
-                  hintText: "Enter your full name",
-                  icon: Icons.person,
-                  onSave: (value) => _fullName = value,
-                  validator: (value) => value == null || value.isEmpty
-                      ? "Full name is required"
-                      : null,
-                ),
-
-                const SizedBox(height: 16),
-
-                // Email Field
-                _buildTextField(
-                  label: "Email",
-                  hintText: "Enter your email address",
-                  icon: Icons.email,
-                  keyboardType: TextInputType.emailAddress,
-                  onSave: (value) => _email = value,
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return "Email is required";
-                    } else if (!RegExp(r'^[^@]+@[^@]+\.[^@]+')
-                        .hasMatch(value)) {
-                      return "Please enter a valid email";
-                    }
-                    return null;
-                  },
-                ),
-
-                const SizedBox(height: 16),
-
-                // Phone Number Field
-                _buildTextField(
-                  label: "Phone Number",
-                  hintText: "Enter your phone number",
-                  icon: Icons.phone,
-                  keyboardType: TextInputType.phone,
-                  onSave: (value) => _phoneNumber = value,
-                  validator: (value) => value == null || value.isEmpty
-                      ? "Phone number is required"
-                      : null,
-                ),
-
-                const SizedBox(height: 16),
-
-                // Departure Date Field
-                _buildDatePickerField(
-                  label: "Departure Date",
-                  icon: Icons.calendar_today,
-                  selectedDate: _departureDateTime,
-                  onDatePicked: (pickedDate) {
-                    setState(() {
-                      _departureDateTime = DateTime(
-                        pickedDate.year,
-                        pickedDate.month,
-                        pickedDate.day,
-                        _departureDateTime?.hour ?? 0,
-                        _departureDateTime?.minute ?? 0,
-                      );
-                    });
-                  },
-                  validator: () => _departureDateTime == null
-                      ? "Please select a departure date"
-                      : null,
-                ),
-
-                const SizedBox(height: 16),
-
-                // Departure Time Field
-                _buildTimePickerField(
-                  label: "Departure Time",
-                  icon: Icons.access_time,
-                  selectedDateTime: _departureDateTime,
-                  onTimePicked: (pickedTime) {
-                    setState(() {
-                      _departureDateTime = DateTime(
-                        _departureDateTime?.year ?? DateTime.now().year,
-                        _departureDateTime?.month ?? DateTime.now().month,
-                        _departureDateTime?.day ?? DateTime.now().day,
-                        pickedTime.hour,
-                        pickedTime.minute,
-                      );
-                    });
-                  },
-                  validator: () => _departureDateTime == null
-                      ? "Please select a departure time"
-                      : null,
-                ),
-
-                const SizedBox(height: 16),
-
-                // Lounge Selection Dropdown
-                DropdownButtonFormField<String>(
-                  decoration: InputDecoration(
-                    labelText: "Select Lounge",
-                    border: OutlineInputBorder(),
-                    prefixIcon: const Icon(Icons.airline_seat_recline_extra),
-                  ),
-                  items: lounges.map((lounge) {
-                    return DropdownMenuItem(
-                      value: lounge,
-                      child: Text(lounge),
-                    );
-                  }).toList(),
-                  onChanged: (value) {
-                    setState(() {
-                      _selectedLounge = value;
-                    });
-                  },
-                  validator: (value) =>
-                      value == null ? "Please select a lounge" : null,
-                ),
-
-                const SizedBox(height: 30),
-
-                // Book Button
-                Center(
-                  child: ElevatedButton(
-                    onPressed: () {
-                      if (_formKey.currentState!.validate()) {
-                        _formKey.currentState!.save();
-                        _showReservationDetails();
-                      }
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.blue[800],
-                      padding: const EdgeInsets.symmetric(
-                        vertical: 15,
-                        horizontal: 40,
-                      ),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(30),
-                      ),
-                    ),
-                    child: const Text(
-                      'Book Lounge',
-                      style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.white),
-                    ),
-                  ),
-                ),
-              ],
-            ),
+              ),
+            ],
           ),
         ),
       ),
@@ -199,7 +176,6 @@ class _LoungeOneFormState extends State<LoungeOneForm> {
 
   Widget _buildTextField({
     required String label,
-    required String hintText,
     required IconData icon,
     required void Function(String?) onSave,
     required String? Function(String?) validator,
@@ -208,9 +184,11 @@ class _LoungeOneFormState extends State<LoungeOneForm> {
     return TextFormField(
       decoration: InputDecoration(
         labelText: label,
-        hintText: hintText,
-        border: const OutlineInputBorder(),
-        prefixIcon: Icon(icon),
+        labelStyle: const TextStyle(color: Colors.black54),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(10),
+        ),
+        prefixIcon: Icon(icon, color: Colors.black),
       ),
       keyboardType: keyboardType,
       validator: validator,
@@ -221,22 +199,9 @@ class _LoungeOneFormState extends State<LoungeOneForm> {
   Widget _buildDatePickerField({
     required String label,
     required IconData icon,
-    required DateTime? selectedDate,
     required Function(DateTime) onDatePicked,
-    required String? Function()? validator,
   }) {
-    return TextFormField(
-      decoration: InputDecoration(
-        labelText: label,
-        border: const OutlineInputBorder(),
-        prefixIcon: Icon(icon),
-      ),
-      readOnly: true,
-      controller: TextEditingController(
-        text: selectedDate != null
-            ? '${selectedDate.toLocal()}'.split(' ')[0]
-            : '',
-      ),
+    return GestureDetector(
       onTap: () async {
         final pickedDate = await showDatePicker(
           context: context,
@@ -248,70 +213,128 @@ class _LoungeOneFormState extends State<LoungeOneForm> {
           onDatePicked(pickedDate);
         }
       },
-      validator: (_) =>
-          validator != null ? validator() : null, // Fixed validator
-    );
-  }
-
-  Widget _buildTimePickerField({
-    required String label,
-    required IconData icon,
-    required DateTime? selectedDateTime,
-    required Function(TimeOfDay) onTimePicked,
-    required String? Function()? validator,
-  }) {
-    return TextFormField(
-      decoration: InputDecoration(
-        labelText: label,
-        border: const OutlineInputBorder(),
-        prefixIcon: Icon(icon),
-      ),
-      readOnly: true,
-      controller: TextEditingController(
-        text: selectedDateTime != null
-            ? '${selectedDateTime.hour}:${selectedDateTime.minute.toString().padLeft(2, '0')}'
-            : '',
-      ),
-      onTap: () async {
-        final pickedTime = await showTimePicker(
-          context: context,
-          initialTime: TimeOfDay.now(),
-        );
-        if (pickedTime != null) {
-          onTimePicked(pickedTime);
-        }
-      },
-      validator: (_) =>
-          validator != null ? validator() : null, // Fixed validator
-    );
-  }
-
-  void _showReservationDetails() {
-    final reservationDetails = {
-      'Full Name': _fullName,
-      'Email': _email,
-      'Phone Number': _phoneNumber,
-      'Lounge': _selectedLounge,
-      'Departure Time': _departureDateTime?.toIso8601String(),
-    };
-
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Reservation Details'),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: reservationDetails.entries.map((entry) {
-            return Text('${entry.key}: ${entry.value}');
-          }).toList(),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(),
-            child: const Text('OK'),
+      child: AbsorbPointer(
+        child: TextFormField(
+          decoration: InputDecoration(
+            labelText: label,
+            labelStyle: const TextStyle(color: Colors.black54),
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(10),
+            ),
+            prefixIcon: Icon(icon, color: Colors.black),
           ),
-        ],
+          controller: TextEditingController(
+            text: _departureDateTime != null
+                ? _departureDateTime!.toLocal().toString().split(' ')[0]
+                : '',
+          ),
+        ),
       ),
     );
+  }
+
+  Future<void> _submitForm() async {
+    if (_formKey.currentState!.validate()) {
+      _formKey.currentState!.save();
+
+      // Check if date is selected before proceeding
+      if (_departureDateTime == null) {
+        showDialog(
+          context: context,
+          builder: (context) => AlertDialog(
+            title: const Text('Invalid Input'),
+            content: const Text('Please select a departure date.'),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(),
+                child: const Text('OK'),
+              ),
+            ],
+          ),
+        );
+        return;
+      }
+
+      final reservationData = {
+        'name': _fullName,
+        'email': _email,
+        'phone': _phoneNumber,
+        'lounge_name': _selectedLounge,
+        'departure_time': _departureDateTime?.toIso8601String(),
+      };
+
+      try {
+        // Show loading indicator while waiting for the response
+        showDialog(
+          context: context,
+          barrierDismissible: false, // Prevent closing while waiting
+          builder: (context) => const Center(
+            child: CircularProgressIndicator(),
+          ),
+        );
+
+        final response = await http.post(
+          Uri.parse(
+              'http://10.0.2.2:6000/api/reserve-lounge'), // Ensure correct URL
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: json.encode(reservationData),
+        );
+
+        Navigator.of(context).pop(); // Close the loading indicator
+
+        if (response.statusCode == 201) {
+          // Reservation successful
+          showDialog(
+            context: context,
+            builder: (context) => AlertDialog(
+              title: const Text('Reservation Confirmed'),
+              content: Text(
+                "Name: $_fullName\nEmail: $_email\nPhone: $_phoneNumber\n"
+                "Lounge: $_selectedLounge\nDeparture: $_departureDateTime",
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.of(context).pop(),
+                  child: const Text('OK'),
+                ),
+              ],
+            ),
+          );
+        } else {
+          // Error during reservation
+          showDialog(
+            context: context,
+            builder: (context) => AlertDialog(
+              title: const Text('Reservation Failed'),
+              content: Text('Error: ${response.body}'),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.of(context).pop(),
+                  child: const Text('OK'),
+                ),
+              ],
+            ),
+          );
+        }
+      } catch (error) {
+        // Handle any errors that occur during the request
+        print('Error during request: $error');
+        showDialog(
+          context: context,
+          builder: (context) => AlertDialog(
+            title: const Text('Request Error'),
+            content: Text('An error occurred: $error'),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(),
+                child: const Text('OK'),
+              ),
+            ],
+          ),
+        );
+      }
+    }
   }
 }

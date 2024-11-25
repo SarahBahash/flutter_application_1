@@ -116,6 +116,8 @@ class _PersonalCompanionServicePageState
             "date": DateFormat('yyyy-MM-dd').format(selectedDate!),
             "time": formatTimeOfDay(selectedTime!),
             "staff": randomStaff, // Example: using the first staff member
+            "passenger_type":
+                isChildSelected ? "Child" : "Special needs", // New field
           }),
         );
         if (response.statusCode == 201) {
@@ -161,12 +163,12 @@ class _PersonalCompanionServicePageState
     return Scaffold(
       appBar: AppBar(
         title: const Text('Personal Companion Service'),
-        backgroundColor: Colors.blue[800],
+        backgroundColor: const Color.fromARGB(255, 57, 125, 202),
       ),
       body: Container(
         decoration: const BoxDecoration(
           gradient: LinearGradient(
-            colors: [Colors.blue, Colors.white],
+            colors: [Color(0xFF90CAF9), Color.fromARGB(255, 255, 255, 255)],
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
           ),
@@ -185,7 +187,7 @@ class _PersonalCompanionServicePageState
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    const Text('Child'),
+                    const Text('Special needs (Elderly)'),
                     Switch(
                       value: isChildSelected,
                       onChanged: (value) {
@@ -193,11 +195,11 @@ class _PersonalCompanionServicePageState
                           isChildSelected = value;
                         });
                       },
-                      activeColor: Colors.blue[800],
+                      activeColor: const Color.fromARGB(255, 12, 91, 180),
                       inactiveThumbColor: Colors.grey,
                       inactiveTrackColor: Colors.grey[300],
                     ),
-                    const Text('Adult'),
+                    const Text('Child'),
                   ],
                 ),
                 const SizedBox(height: 20),
