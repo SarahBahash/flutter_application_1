@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http; // Import for HTTP requests
 import 'dart:convert'; // Import for JSON encoding/decoding
 import 'package:intl/intl.dart';
-//import 'package:shared_preferences/shared_preferences.dart';
 
 class ReserveParkingPage extends StatefulWidget {
   const ReserveParkingPage({super.key});
@@ -17,7 +16,6 @@ class _ParkingReservationPageState extends State<ReserveParkingPage> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _vehicleNumberController =
       TextEditingController();
-  // Controllers for date and time
   final TextEditingController _dateController = TextEditingController();
   final TextEditingController _timeController = TextEditingController();
 
@@ -237,7 +235,7 @@ class _ParkingReservationPageState extends State<ReserveParkingPage> {
       body: Container(
         decoration: const BoxDecoration(
           gradient: LinearGradient(
-            colors: [Colors.blue, Colors.white],
+            colors: [Color.fromARGB(255, 77, 138, 208), Colors.white],
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
           ),
@@ -414,10 +412,13 @@ class _ParkingReservationPageState extends State<ReserveParkingPage> {
                     child: ElevatedButton(
                       onPressed: _submitReservation,
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.blue,
+                        backgroundColor: Color(0xFF4A8AD4),
                         padding: const EdgeInsets.symmetric(
                           horizontal: 50,
                           vertical: 15,
+                        ),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10),
                         ),
                       ),
                       child: const Text(

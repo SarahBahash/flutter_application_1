@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http; // Import http package
-import 'dart:convert'; // Import for json encoding
-import 'dart:math'; // Import this at the top of the file
+import 'package:http/http.dart' as http;
+import 'dart:convert';
+import 'dart:math';
 
 class DriverPage extends StatefulWidget {
   const DriverPage({super.key});
@@ -11,18 +11,18 @@ class DriverPage extends StatefulWidget {
 }
 
 class _DriverPageState extends State<DriverPage> {
-  final TextEditingController _cityController = TextEditingController();
   final TextEditingController _streetController = TextEditingController();
   final TextEditingController _postcodeController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
 
+  String? _selectedCity;
   String? _selectedTerminal;
   TimeOfDay? _pickupTime;
 
+  final List<String> _cities = ['Jeddah', 'Makkah'];
   final List<String> _terminals = ['Terminal 1', 'Terminal 2'];
   final _formKey = GlobalKey<FormState>();
 
-  // List of staff names (not displayed)
   final List<String> driverNames = [
     'Khaled Mohammed',
     'Sarah Bahashwan',
@@ -33,35 +33,36 @@ class _DriverPageState extends State<DriverPage> {
 
   void _reserve() async {
     if (!_formKey.currentState!.validate()) {
-      return; // Exit early if the form is invalid
+      return;
     }
-    final random = Random();
-    final randomdriver = driverNames[random.nextInt(driverNames.length)];
 
-    // Send the reservation data to the server
+    final random = Random();
+    final randomDriver = driverNames[random.nextInt(driverNames.length)];
+
     try {
       final url = Uri.parse('http://10.0.2.2:6000/api/reserve-driver');
       final response = await http.post(
         url,
         headers: {'Content-Type': 'application/json'},
         body: jsonEncode({
-          'city': _cityController.text,
+          'city': _selectedCity,
           'street': _streetController.text,
           'postcode': _postcodeController.text,
           'email': _emailController.text,
           'terminal': _selectedTerminal,
           'pickup_time': formatTimeOfDay(_pickupTime!),
-          "driver": randomdriver, // Example: using the first staff member
+          'driver': randomDriver,
         }),
       );
 
       if (response.statusCode == 201) {
-        // If the server returns a 201 Created response, show success dialog
         showDialog(
           context: context,
           builder: (context) => AlertDialog(
             title: const Text('Success'),
-            content: const Text('Reservation successful!'),
+            content: Text(
+              'Your reservation is successful! Driver: $randomDriver',
+            ),
             actions: [
               TextButton(
                 onPressed: () => Navigator.of(context).pop(),
@@ -71,12 +72,9 @@ class _DriverPageState extends State<DriverPage> {
           ),
         );
       } else {
-        // Handle server errors
         throw Exception('Failed to make reservation');
       }
     } catch (e) {
-      // Show error dialog if something goes wrong
-      print(e);
       showDialog(
         context: context,
         builder: (context) => AlertDialog(
@@ -93,14 +91,10 @@ class _DriverPageState extends State<DriverPage> {
     }
   }
 
-  // Function to format TimeOfDay to "HH:mm:ss"
   String formatTimeOfDay(TimeOfDay time) {
-    String hours = time.hour.toString().padLeft(2, '0'); // Zero-padded hours
-    String minutes =
-        time.minute.toString().padLeft(2, '0'); // Zero-padded minutes
-    String seconds = "00"; // Default seconds to zero
-
-    return "$hours:$minutes:$seconds"; // Return formatted time string
+    String hours = time.hour.toString().padLeft(2, '0');
+    String minutes = time.minute.toString().padLeft(2, '0');
+    return "$hours:$minutes:00";
   }
 
   @override
@@ -108,12 +102,14 @@ class _DriverPageState extends State<DriverPage> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Driver Reservation'),
-        backgroundColor: Colors.blue[800],
+        backgroundColor: Color(0xFF4A8AD4),
+        elevation: 0,
+        centerTitle: true,
       ),
       body: Container(
         decoration: const BoxDecoration(
           gradient: LinearGradient(
-            colors: [Color(0xFF0D47A1), Color(0xFF42A5F5)],
+            colors: [Color.fromARGB(255, 90, 155, 230), Color(0xFFF5F7FA)],
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
           ),
@@ -125,115 +121,79 @@ class _DriverPageState extends State<DriverPage> {
               key: _formKey,
               child: Card(
                 shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(16.0),
+                  borderRadius: BorderRadius.circular(15),
                 ),
-                elevation: 5,
+                elevation: 4,
                 child: Padding(
-                  padding: const EdgeInsets.all(16.0),
+                  padding: const EdgeInsets.all(20.0),
                   child: Column(
-                    mainAxisSize: MainAxisSize.min,
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
                       const Text(
                         'KING ABDULAZIZ AIRPORT\nPrivate Driver Service',
                         style: TextStyle(
-                          fontSize: 24,
+                          fontSize: 22,
                           fontWeight: FontWeight.bold,
-                          color: Colors.blue,
+                          color: Color.fromARGB(255, 0, 0, 0),
                         ),
                         textAlign: TextAlign.center,
                       ),
                       const SizedBox(height: 20),
-                      TextFormField(
-                        controller: _cityController,
-                        decoration: const InputDecoration(
-                          labelText: 'City',
-                          prefixIcon: Icon(Icons.location_city),
-                          border: OutlineInputBorder(),
-                        ),
-                        validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return 'City is required';
-                          }
-                          return null;
-                        },
-                      ),
+                      // City Dropdown
+                      _buildCityDropdownField(),
                       const SizedBox(height: 15),
-                      TextFormField(
+                      // Street Field
+                      _buildTextField(
                         controller: _streetController,
-                        decoration: const InputDecoration(
-                          labelText: 'Street',
-                          prefixIcon: Icon(Icons.streetview),
-                          border: OutlineInputBorder(),
-                        ),
-                        validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return 'Street is required';
-                          }
-                          return null;
-                        },
+                        label: 'Street',
+                        icon: Icons.streetview,
+                        validator: (value) => value == null || value.isEmpty
+                            ? 'Street is required'
+                            : null,
                       ),
                       const SizedBox(height: 15),
-                      TextFormField(
+                      // Postcode Field
+                      _buildTextField(
                         controller: _postcodeController,
+                        label: 'Postcode',
+                        icon: Icons.local_post_office,
                         keyboardType: TextInputType.number,
-                        decoration: const InputDecoration(
-                          labelText: 'Postcode',
-                          prefixIcon: Icon(Icons.local_post_office),
-                          border: OutlineInputBorder(),
-                        ),
-                        validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return 'Postcode is required';
-                          }
-                          return null;
-                        },
+                        validator: (value) => value == null || value.isEmpty
+                            ? 'Postcode is required'
+                            : null,
                       ),
                       const SizedBox(height: 15),
-                      TextFormField(
+                      // Email Field
+                      _buildTextField(
                         controller: _emailController,
+                        label: 'Email',
+                        icon: Icons.email,
                         keyboardType: TextInputType.emailAddress,
-                        decoration: const InputDecoration(
-                          labelText: 'Email',
-                          prefixIcon: Icon(Icons.email),
-                          border: OutlineInputBorder(),
-                        ),
                         validator: (value) {
                           if (value == null || value.isEmpty) {
                             return 'Email is required';
                           }
-                          if (!RegExp(r'^[^@]+@[^@]+\.[^@]+').hasMatch(value)) {
+                          if (!RegExp(r'^[^@]+@[^@]+\.[^@]+$')
+                              .hasMatch(value)) {
                             return 'Enter a valid email address';
                           }
                           return null;
                         },
                       ),
                       const SizedBox(height: 15),
-                      DropdownButtonFormField<String>(
-                        decoration: const InputDecoration(
-                          labelText: 'Select Terminal',
-                          prefixIcon: Icon(Icons.flight_takeoff),
-                          border: OutlineInputBorder(),
-                        ),
-                        items: _terminals.map((terminal) {
-                          return DropdownMenuItem(
-                            value: terminal,
-                            child: Text(terminal),
-                          );
-                        }).toList(),
-                        onChanged: (value) {
-                          setState(() {
-                            _selectedTerminal = value;
-                          });
-                        },
-                        validator: (value) {
-                          if (value == null) {
-                            return 'Please select a terminal';
-                          }
-                          return null;
-                        },
+                      // Terminal Dropdown
+                      _buildDropdownField(
+                        label: 'Select Terminal',
+                        icon: Icons.flight_takeoff,
+                        items: _terminals,
+                        value: _selectedTerminal,
+                        onChanged: (value) =>
+                            setState(() => _selectedTerminal = value),
+                        validator: (value) =>
+                            value == null ? 'Please select a terminal' : null,
                       ),
                       const SizedBox(height: 15),
+                      // Pickup Time Button
                       ElevatedButton.icon(
                         icon: const Icon(Icons.schedule),
                         label: const Text('Select Pickup Time'),
@@ -243,9 +203,7 @@ class _DriverPageState extends State<DriverPage> {
                             initialTime: TimeOfDay.now(),
                           );
                           if (time != null) {
-                            setState(() {
-                              _pickupTime = time;
-                            });
+                            setState(() => _pickupTime = time);
                           }
                         },
                       ),
@@ -258,15 +216,24 @@ class _DriverPageState extends State<DriverPage> {
                           ),
                         ),
                       const SizedBox(height: 20),
+                      // Reserve Button
                       ElevatedButton(
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.blue[800],
+                          backgroundColor: Color(0xFF4A8AD4),
                           padding: const EdgeInsets.symmetric(vertical: 15),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          elevation: 4,
                         ),
                         onPressed: _reserve,
                         child: const Text(
                           'Reserve',
-                          style: TextStyle(fontSize: 18, color: Colors.white),
+                          style: TextStyle(
+                            fontSize: 18,
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
                       ),
                     ],
@@ -277,6 +244,82 @@ class _DriverPageState extends State<DriverPage> {
           ),
         ),
       ),
+    );
+  }
+
+  Widget _buildCityDropdownField() {
+    return DropdownButtonFormField<String>(
+      decoration: InputDecoration(
+        labelText: 'City',
+        prefixIcon: const Icon(Icons.location_city, color: Colors.blueAccent),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(10),
+        ),
+      ),
+      items: _cities.map((city) {
+        return DropdownMenuItem(
+          value: city,
+          child: Text(city),
+        );
+      }).toList(),
+      onChanged: (value) {
+        setState(() {
+          _selectedCity = value;
+        });
+      },
+      validator: (value) => value == null ? 'Please select a city' : null,
+    );
+  }
+
+  Widget _buildTextField({
+    required TextEditingController controller,
+    required String label,
+    required IconData icon,
+    TextInputType keyboardType = TextInputType.text,
+    String? Function(String?)? validator,
+  }) {
+    return TextFormField(
+      controller: controller,
+      decoration: InputDecoration(
+        labelText: label,
+        prefixIcon: Icon(icon, color: Colors.blueAccent),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(10),
+        ),
+      ),
+      keyboardType: keyboardType,
+      validator: validator,
+    );
+  }
+
+  Widget _buildDropdownField({
+    required String label,
+    required IconData icon,
+    required List<String> items,
+    String? value,
+    void Function(String?)? onChanged,
+    String? Function(String?)? validator,
+  }) {
+    return DropdownButtonFormField<String>(
+      decoration: InputDecoration(
+        labelText: label,
+        prefixIcon: Icon(
+          icon,
+          color: Color(0xFF4A8AD4),
+        ),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(10),
+        ),
+      ),
+      items: items.map((item) {
+        return DropdownMenuItem(
+          value: item,
+          child: Text(item),
+        );
+      }).toList(),
+      value: value,
+      onChanged: onChanged,
+      validator: validator,
     );
   }
 }

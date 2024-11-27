@@ -204,7 +204,7 @@ class MainPage extends StatelessWidget {
     );
   }
 
-  // Dialog for Options
+// Dialog for Options
   void _showOptionsDialog(BuildContext context) {
     showDialog(
       context: context,
@@ -217,17 +217,6 @@ class MainPage extends StatelessWidget {
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              ListTile(
-                leading: const Icon(Icons.person),
-                title: const Text('View User Info'),
-                onTap: () {
-                  Navigator.pop(context);
-                  showDialog(
-                    context: context,
-                    builder: (context) => const UserInfoDialog(),
-                  );
-                },
-              ),
               ListTile(
                 leading: const Icon(Icons.history),
                 title: const Text('Previous Reservations'),

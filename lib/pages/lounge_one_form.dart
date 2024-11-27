@@ -18,21 +18,21 @@ class _LoungeOneFormState extends State<LoungeOneForm> {
   DateTime? _departureDateTime;
   String? _selectedLounge;
 
-  final List<String> lounges = ['AL Fursan', 'Plaza', 'Wellcome'];
+  final List<String> lounges = ['AL Fursan', 'Plaza', 'Welcome'];
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Lounge Booking'),
-        backgroundColor: const Color(0xFF2F63C5),
+        backgroundColor: Color(0xFF4A8AD4),
         elevation: 2,
         centerTitle: true,
       ),
       body: Container(
         decoration: const BoxDecoration(
           gradient: LinearGradient(
-            colors: [Color(0xFF6CBDFC), Color(0xFFF4F6F8)],
+            colors: [Color(0xFF6CBDFC), Color.fromARGB(255, 255, 255, 255)],
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
           ),
@@ -61,6 +61,8 @@ class _LoungeOneFormState extends State<LoungeOneForm> {
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: 20),
+
+              // Form Section
               Card(
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(15),
@@ -145,17 +147,19 @@ class _LoungeOneFormState extends State<LoungeOneForm> {
                   ),
                 ),
               ),
-              const SizedBox(height: 200),
+
+              const SizedBox(height: 120),
+
+              // Submit Button
               ElevatedButton(
                 onPressed: _submitForm,
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFF2458B8),
+                  backgroundColor: Color(0xFF4A8AD4),
                   padding:
                       const EdgeInsets.symmetric(vertical: 15, horizontal: 50),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(10),
                   ),
-                  shadowColor: const Color.fromARGB(255, 255, 255, 255),
                   elevation: 4,
                 ),
                 child: const Text(
@@ -237,7 +241,6 @@ class _LoungeOneFormState extends State<LoungeOneForm> {
     if (_formKey.currentState!.validate()) {
       _formKey.currentState!.save();
 
-      // Check if date is selected before proceeding
       if (_departureDateTime == null) {
         showDialog(
           context: context,
@@ -255,6 +258,7 @@ class _LoungeOneFormState extends State<LoungeOneForm> {
         return;
       }
 
+      // Build Reservation Data
       final reservationData = {
         'name': _fullName,
         'email': _email,
@@ -264,10 +268,9 @@ class _LoungeOneFormState extends State<LoungeOneForm> {
       };
 
       try {
-        // Show loading indicator while waiting for the response
         showDialog(
           context: context,
-          barrierDismissible: false, // Prevent closing while waiting
+          barrierDismissible: false,
           builder: (context) => const Center(
             child: CircularProgressIndicator(),
           ),
